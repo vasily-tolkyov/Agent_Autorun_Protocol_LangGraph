@@ -1,20 +1,34 @@
 # Agent Autorun Protocol LangGraph
 
+[![validate](https://github.com/vasily-tolkyov/Agent_Autorun_Protocol_LangGraph/actions/workflows/validate.yml/badge.svg)](https://github.com/vasily-tolkyov/Agent_Autorun_Protocol_LangGraph/actions/workflows/validate.yml)
+
 [English](README.md) | 简体中文
 
-这个仓库保留了与 [Agent_Autorun_Protocol](https://github.com/vasily-tolkyov/Agent_Autorun_Protocol) 相同的高层工作流，但把底层运行时替换成了本地 LangGraph 环境。
+这是 [Agent_Autorun_Protocol](https://github.com/vasily-tolkyov/Agent_Autorun_Protocol) 的 LangGraph 发布版。
 
-也就是说，工作流仍然是：
+它保留了与原项目相同的工作流骨架：
 
-- `phase-stage-autoplan-entry` 负责把模糊任务整理成可执行的 phase/stage 计划
-- `phase-stage-autorun-protocol` 负责持续推进已批准的计划
-- `generator-critic-verification-loop` 负责每个阶段后的审核与修复闭环
+- `phase-stage-autoplan-entry`：把模糊任务整理成可执行的 phase/stage 计划。
+- `phase-stage-autorun-protocol`：沿着已批准的计划和稳定队列持续推进。
+- `generator-critic-verification-loop`：在每个阶段后执行审核、修复规划和重复验证。
 
-真正变化的是运行时：
+真正变化的是底层 runtime：
 
-- LangGraph 的 thread state 和 checkpoint 才是唯一权威状态源
-- ACL-X 文件只保留为兼容导出和压缩表达
-- 这个版本必须有可用的 LangGraph 本地 Python 环境
+- LangGraph 的 thread state 和 checkpoint 是唯一权威状态源。
+- ACL-X 继续保留，但只作为紧凑导出和兼容格式，不再是真实运行时状态。
+- 整个工作流现在依赖本地可用的 LangGraph Python 环境。
+
+## 这个发布版解决什么问题
+
+这个仓库适合想继续使用原始工作流、但希望把底层运行时切到 LangGraph 的用户：
+
+- 支持可恢复的 LangGraph thread
+- 支持 checkpoint 驱动的阶段执行
+- 支持本地 `langgraph dev` 监督和复用
+- 自带自动环境初始化
+- 保留 Codex skill 入口体验
+
+如果你需要的是原始 ACL-X 文件型 runtime，请使用 [Agent_Autorun_Protocol](https://github.com/vasily-tolkyov/Agent_Autorun_Protocol)。
 
 ## 仓库内容
 
@@ -30,60 +44,67 @@ scripts/
   validate_bundle.py
 ```
 
-## 自动配置
+## 快速开始
 
-仓库内置了 LangGraph 运行时的自动配置逻辑：
-
-- `scripts/install.py` 会把打包好的 skill 复制到你的 `CODEX_HOME/skills`
-- 自动创建 `phase-stage-langgraph-runtime/.venv`
-- 自动安装 `langgraph-cli[inmem]`、`langgraph`、`langgraph-sdk`、`langchain-core`、`langgraph-checkpoint-sqlite`
-- 自动执行可编辑安装
-- 如有需要会从 `.env.example` 生成 `.env`
-- 自动校验 `langgraph.json`
-
-Windows 下直接运行：
+1. 安装整个 bundle：
 
 ```powershell
 python scripts\install.py
 ```
 
-或者：
-
-```powershell
-.\scripts\install.ps1
-```
-
-## 快速开始
-
-1. 运行安装脚本。
 2. 验证打包内容：
 
 ```powershell
 python scripts\validate_bundle.py
 ```
 
-3. 运行 smoke test：
+3. 如有需要，运行 smoke test：
 
 ```powershell
-python skills\phase-stage-autoplan-entry\scripts\smoke_test_autoplan_entry.py
-python skills\phase-stage-autorun-protocol\scripts\smoke_test_runtime_bridge.py
-python skills\generator-critic-verification-loop\scripts\smoke_test_generator_critic_loop.py
+python %USERPROFILE%\.codex\skills\phase-stage-autoplan-entry\scripts\smoke_test_autoplan_entry.py
+python %USERPROFILE%\.codex\skills\phase-stage-autorun-protocol\scripts\smoke_test_runtime_bridge.py
+python %USERPROFILE%\.codex\skills\generator-critic-verification-loop\scripts\smoke_test_generator_critic_loop.py
 ```
 
-4. 从下面这句开始：
+4. 在 Codex 中从规划开始：
 
 ```text
 Use $phase-stage-autoplan-entry to plan the task.
 ```
 
-5. 批准后再继续：
+5. 计划批准后继续执行：
 
 ```text
 Use $phase-stage-autorun-protocol to execute the approved plan.
 ```
 
-## LangGraph 依赖说明
+## 自动配置能力
 
-这个仓库明确要求本地具备 LangGraph 运行环境。如果你想使用原始的 ACL-X 文件型 runtime 版本，请使用 [Agent_Autorun_Protocol](https://github.com/vasily-tolkyov/Agent_Autorun_Protocol)。
+安装脚本会自动完成 LangGraph 环境初始化：
 
-详细安装和升级说明见 [INSTALL.zh-CN.md](INSTALL.zh-CN.md)。
+- 将打包好的 skills 复制到 `CODEX_HOME/skills`
+- 创建 `phase-stage-langgraph-runtime/.venv`
+- 安装 `langgraph-cli[inmem]`、`langgraph`、`langgraph-sdk`、`langchain-core`、`langgraph-checkpoint-sqlite` 和 `python-dotenv`
+- 以 editable 模式安装共享 runtime 包
+- 需要时从 `.env.example` 生成 `.env`
+- 执行 `langgraph validate`
+- 可选启动本地 LangGraph 开发服务器
+
+PowerShell 包装入口：
+
+```powershell
+.\scripts\install.ps1
+```
+
+## 文档导航
+
+- [Installation Guide](INSTALL.md)
+- [安装说明](INSTALL.zh-CN.md)
+- [Changelog](CHANGELOG.md)
+- [更新日志](CHANGELOG.zh-CN.md)
+- [Runtime README](skills/phase-stage-langgraph-runtime/README.md)
+- [运行时说明](skills/phase-stage-langgraph-runtime/README.zh-CN.md)
+
+## 发布状态
+
+这个仓库就是 LangGraph 版工作流的正式发布包，可直接克隆、安装并使用。

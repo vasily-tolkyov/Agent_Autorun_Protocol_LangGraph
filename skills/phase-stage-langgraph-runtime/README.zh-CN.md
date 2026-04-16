@@ -1,39 +1,39 @@
 # Phase/Stage LangGraph Runtime
 
-English | [简体中文](README.zh-CN.md)
+[English](README.md) | 简体中文
 
-This package hosts the shared LangGraph runtime used by:
+这个包承载了以下 3 个 skill 共用的 LangGraph 运行时：
 
 - `phase-stage-autoplan-entry`
 - `phase-stage-autorun-protocol`
 - `generator-critic-verification-loop`
 
-## Runtime Model
+## Runtime 模型
 
-- LangGraph thread state and SQLite checkpoints are authoritative.
-- Planning and runtime exports under the target project remain compatibility views.
-- ACL-X is retained for compact exports and handoff packets, not recovery truth.
+- LangGraph 的 thread state 和 SQLite checkpoint 是唯一权威状态源。
+- 目标项目中的 planning 和 runtime 导出文件仍然保留，但只作为兼容视图。
+- ACL-X 继续用于紧凑导出和 handoff packet，不再作为恢复依据。
 
-## Important Paths
+## 重要路径
 
-- runtime app root:
+- runtime 应用根目录：
   `<CODEX_HOME>/skills/phase-stage-langgraph-runtime`
-- planning exports:
+- planning 导出目录：
   `<project-root>\plans\phase-stage-langgraph\<runId>\`
-- runtime exports:
+- runtime 导出目录：
   `<project-root>\.codex\phase-stage-langgraph\<runId>\`
-- local checkpoint store:
+- 本地 checkpoint 存储：
   `var\langgraph-checkpoints.sqlite`
 
-## Setup
+## 安装方式
 
-The recommended path is to use the top-level installer:
+推荐直接使用仓库顶层安装脚本：
 
 ```powershell
 python scripts\install.py
 ```
 
-Manual setup is also possible:
+如果需要，也可以手动安装：
 
 ```powershell
 python -m venv .venv
@@ -41,17 +41,17 @@ python -m venv .venv
 .venv\Scripts\python -m pip install -e .
 ```
 
-## Manual Server Start
+## 手动启动服务
 
 ```powershell
 .venv\Scripts\langgraph.exe dev --config langgraph.json --host 127.0.0.1 --port 2024 --no-browser --no-reload
 ```
 
-The wrappers normally manage this through `scripts\phase_stage_client.py`.
+通常不需要手动执行，wrapper 会通过 `scripts\phase_stage_client.py` 自动管理。
 
-## Unified Client Commands
+## 统一客户端命令
 
-Use `scripts\phase_stage_client.py` for direct runtime control:
+可以通过 `scripts\phase_stage_client.py` 直接控制 runtime：
 
 - `plan`
 - `status`
@@ -62,7 +62,7 @@ Use `scripts\phase_stage_client.py` for direct runtime control:
 - `export`
 - `server`
 
-## Graph IDs
+## Graph ID
 
 - `phase_stage_planning`
 - `phase_stage_autorun`
