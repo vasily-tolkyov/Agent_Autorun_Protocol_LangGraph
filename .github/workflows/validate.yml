@@ -1,0 +1,45 @@
+name: validate
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Validate bundle
+        run: python scripts\validate_bundle.py
+      - name: Install bundle
+        shell: pwsh
+        run: |
+          $env:CODEX_HOME = Join-Path $env:GITHUB_WORKSPACE ".codex-home"
+          python scripts\install.py --codex-home $env:CODEX_HOME --start-server
+      - name: Smoke test autoplan
+        shell: pwsh
+        run: |
+          $env:CODEX_HOME = Join-Path $env:GITHUB_WORKSPACE ".codex-home"
+          python (Join-Path $env:CODEX_HOME "skills\phase-stage-autoplan-entry\scripts\smoke_test_autoplan_entry.py")
+      - name: Smoke test autorun
+        shell: pwsh
+        run: |
+          $env:CODEX_HOME = Join-Path $env:GITHUB_WORKSPACE ".codex-home"
+          python (Join-Path $env:CODEX_HOME "skills\phase-stage-autorun-protocol\scripts\smoke_test_runtime_bridge.py")
+      - name: Smoke test generator critic loop
+        shell: pwsh
+        run: |
+          $env:CODEX_HOME = Join-Path $env:GITHUB_WORKSPACE ".codex-home"
+          python (Join-Path $env:CODEX_HOME "skills\generator-critic-verification-loop\scripts\smoke_test_generator_critic_loop.py")
+      - name: Stop LangGraph server
+        if: always()
+        shell: pwsh
+        run: |
+          $env:CODEX_HOME = Join-Path $env:GITHUB_WORKSPACE ".codex-home"
+          $wrapper = Join-Path $env:CODEX_HOME "skills\phase-stage-autoplan-entry\scripts\run_phase_stage_autoplan.py"
+          if (Test-Path $wrapper) {
+            python $wrapper server stop
+          }

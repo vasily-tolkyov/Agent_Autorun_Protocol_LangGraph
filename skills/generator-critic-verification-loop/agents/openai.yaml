@@ -1,0 +1,7 @@
+interface:
+  display_name: "Generator Critic Refiner Loop"
+  short_description: "Run the LangGraph-backed generator, critic, and refiner loop when real verification rounds begin."
+  default_prompt: "Use $generator-critic-verification-loop when real generator, critic, and refiner handoffs are starting or when the standalone verification graph needs to be debugged directly. Treat LangGraph checkpoints as authoritative, keep ACL-X exports as compatibility views only, and preserve the 5 PASS / 10 FAIL / repeated blocking issue stop rules."
+
+policy:
+  allow_implicit_invocation: true

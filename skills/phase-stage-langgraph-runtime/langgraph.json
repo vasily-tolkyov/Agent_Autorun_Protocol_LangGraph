@@ -1,0 +1,12 @@
+{
+  "dependencies": ["."],
+  "graphs": {
+    "phase_stage_planning": "phase_stage_langgraph_runtime.graphs:phase_stage_planning_graph",
+    "phase_stage_autorun": "phase_stage_langgraph_runtime.graphs:phase_stage_autorun_graph",
+    "generator_critic_loop": "phase_stage_langgraph_runtime.graphs:generator_critic_loop_graph"
+  },
+  "env": ".env",
+  "checkpointer": {
+    "path": "./src/phase_stage_langgraph_runtime/checkpointer.py:create_checkpointer"
+  }
+}

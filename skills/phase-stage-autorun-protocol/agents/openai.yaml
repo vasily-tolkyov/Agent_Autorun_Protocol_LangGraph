@@ -1,0 +1,7 @@
+interface:
+  display_name: "Phase/Stage Autorun"
+  short_description: "Auto-advance long staged tasks through the shared LangGraph runtime with built-in verification."
+  default_prompt: "Use $phase-stage-autorun-protocol to keep this long-running phase/stage plan moving automatically through the shared LangGraph runtime. Treat LangGraph checkpoints as authoritative, keep ACL-X exports as compatibility views only, continue through planned stages without asking for routine supervision, run $generator-critic-verification-loop as the post-stage verification gate, and stop only for real blockers, missing plan detail, or unsafe actions."
+
+policy:
+  allow_implicit_invocation: true

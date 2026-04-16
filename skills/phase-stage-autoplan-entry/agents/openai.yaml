@@ -1,0 +1,7 @@
+interface:
+  display_name: "Phase/Stage Autoplan"
+  short_description: "Collect task context and write adaptive phase/stage plans through the shared LangGraph runtime."
+  default_prompt: "Use $phase-stage-autoplan-entry to collect the target task context, scan the project, and generate an adaptive phase/stage plan under the target project's plans/phase-stage-langgraph directory. Keep this work in t0, let LangGraph thread state be authoritative, keep planning-state.aclx as a compatibility export only, stop in pending approval state, and hand off approved plans to $phase-stage-autorun-protocol through the shared LangGraph runtime."
+
+policy:
+  allow_implicit_invocation: true
